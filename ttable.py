@@ -28,10 +28,7 @@ for map in var_maps(vars):
         expr = expr.replace(var,str(map[var]))
     
     # substitute every variable in the equ
-    print(expr)
-
-    
-    print()
+    print(eval(expr))
 
 
 print(expression)

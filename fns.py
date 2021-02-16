@@ -1,13 +1,16 @@
+digits = {'0','1'}
+ops = ('+','*')
+
 # adds two values
 def add(a,b):
-    if a == '1' and b == '1':
+    if a == '1' or b == '1':
         return '1'
     else:
         return '0'
 
 # multplies two values
 def mult(a,b):
-    if a=='1' or b=='1':
+    if a=='1' and b=='1':
         return '1'
     else: 
         return '0'
@@ -30,4 +33,56 @@ def var_maps(vars):
         maps.append(map)
     return maps
 
+# calculates based on a given operator
+def calc(a,b,op):
+    if op =='+':
+        val = add(a,b)
+        return val
+    elif op=='*':
+        val = mult(a,b)
+        return val
+    else:
+        raise Exception("Invalid Operator")
+
 # evaluates the expression
+def eval(expr):
+    
+    # init stacks
+    val_stack = []
+    op_stack = []
+
+    # loop over the expression
+    for c in expr:
+        if c in digits:
+            val_stack.append(c)
+        elif c == '\'':
+            val_stack.append(neg(val_stack.pop()))
+        elif c in ops and (len(op_stack)<1 or op_stack[-1]=='('):
+            op_stack.append(c)
+        elif c in ops:
+            while len(op_stack)>0:
+                prev_op = op_stack.pop()
+                if prev_op in ops and ops.index(c) < ops.index(prev_op):
+                    b = val_stack.pop()
+                    a = val_stack.pop()
+                    val_stack.append(calc(a,b,prev_op))
+                else:
+                    break
+            op_stack.append(c)
+        elif c =='(':
+            op_stack.append(c)
+        elif c ==')':
+            while len(op_stack)>0:
+                b = val_stack.pop()
+                a = val_stack.pop()
+                op = op_stack.pop()
+                while op == '(':
+                    op = op_stack.pop()
+                val_stack.append(calc(a,b,op))
+        else:
+            raise Exception("Unrecognized Token: "+c)
+    
+    # return statement
+    return val_stack[0]
+
+
